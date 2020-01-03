@@ -2,9 +2,7 @@
 const chalk = require('chalk');
 const ServerGenerator = require('generator-jhipster/generators/server');
 const jhipsterConstants = require('generator-jhipster/generators/generator-constants');
-const os = require('os');
 const jhipsterNodeConstants = require('../generator-nodejs-constants');
-const packagejs = require('../../package.json');
 const writeFiles = require('./files').writeFiles;
 const prompts = require('./prompts');
 
@@ -15,7 +13,7 @@ module.exports = class extends ServerGenerator {
         const jhContext = (this.jhipsterContext = this.options.jhipsterContext);
 
         if (!jhContext) {
-            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprint nodejs')}`);
+            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprints nodejs')}`);
         }
 
         this.configOptions = jhContext.configOptions || {};
@@ -26,99 +24,30 @@ module.exports = class extends ServerGenerator {
     get initializing() {
         const initPhaseFromJHipster = super._initializing();
         const jhipsterInitNodePhaseSteps = {
-            /* eslint-disable */
-            displayNHipsterLogo() {
-                this.log('\n');
-                this.log(`${chalk.yellow(' ███╗   ██╗')}${chalk.green(' ██╗   ██╗ ████████╗ ███████╗   ██████╗ ████████╗ ████████╗ ███████╗')}`);
-                this.log(`${chalk.yellow(' ████╗  ██║')}${chalk.green(' ██║   ██║ ╚══██╔══╝ ██╔═══██╗ ██╔════╝ ╚══██╔══╝ ██╔═════╝ ██╔═══██╗')}`);
-                this.log(`${chalk.yellow(' ██╔██╗ ██║')}${chalk.green(' ████████║    ██║    ███████╔╝ ╚█████╗     ██║    ██████╗   ███████╔╝')}`);
-                this.log(`${chalk.yellow(' ██║╚██╗██║')}${chalk.green(' ██╔═══██║    ██║    ██╔════╝   ╚═══██╗    ██║    ██╔═══╝   ██╔══██║')}`);
-                this.log(`${chalk.yellow(' ██║ ╚████║')}${chalk.green(' ██║   ██║ ████████╗ ██║       ██████╔╝    ██║    ████████╗ ██║  ╚██╗')}`);
-                this.log(`${chalk.yellow(' ╚═╝  ╚═══╝')}${chalk.green(' ╚═╝   ╚═╝ ╚═══════╝ ╚═╝       ╚═════╝     ╚═╝    ╚═══════╝ ╚═╝   ╚═╝')}\n`);
-                this.log(chalk.white.bold('                            https://www.jhipster.tech\n'));
-                this.log(chalk.white('Welcome to NHipster (Jhipster NodeJS Official Blueprint) ') + chalk.yellow(`v${packagejs.version}`));
-                this.log(chalk.white('This blueprint generates your backend in NodeJS with NestJS framework'));
-
-                this.log(
-                    chalk.green(
-                        ' _______________________________________________________________________________________________________________\n'
-                    )
-                );
-                this.log(
-                    chalk.white(
-                        `  For any questions or improvements refer to the stream lead at ${chalk.yellow('https://github.com/amanganiello90')}`
-                    )
-                );
-                this.log(
-                    chalk.white(
-                        `  If you find NHipster useful, support and star the project at ${chalk.yellow(
-                            'https://github.com/jhipster/generator-jhipster-nodejs'
-                        )}`
-                    )
-                );
-                this.log(
-                    chalk.green(
-                        ' _______________________________________________________________________________________________________________\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' This NodeJS blueprint use these following configurations:\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' 1. NestJS Framework with swagger doc\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' 2. JWT Passport security authentication\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' 3. TypeORM usage with SQLite development database\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' 4. Initial load data seed with users (using auth roles) integrated with the angular client (monolithic application type)\n'
-                    )
-                );
-                this.log(
-                    chalk.green.bold(
-                        ' 5. Eureka JS client registry\n'
-                    )
-                );
-
-            },
-
             setupNodeServerconsts() {
-
                 this.packageName = jhipsterNodeConstants.PACKAGE_NAME_NODEJS;
                 this.cacheProvider = jhipsterNodeConstants.CACHE_PROVIDER_NODEJS;
                 this.enableHibernateCache = jhipsterNodeConstants.ENABLE_HIBERNATE_CACHE_NODEJS;
                 this.websocket = jhipsterNodeConstants.WEB_SOCKET_NODEJS;
                 this.databaseType = jhipsterNodeConstants.DATABASE_TYPE_NODEJS;
                 this.devDatabaseType = jhipsterNodeConstants.DEV_DATABASE_TYPE_NODEJS;
-                this.prodDatabaseType = jhipsterNodeConstants.PROD_DATABASE_TYPE_NODEJS;
                 this.searchEngine = jhipsterNodeConstants.SEARCH_ENGINE_NODEJS;
                 this.messageBroker = jhipsterNodeConstants.MESSAGE_BROKER_NODEJS;
                 this.serviceDiscoveryType = jhipsterNodeConstants.SERVICE_DISCOVERY_TYPE_NODEJS;
                 this.buildTool = jhipsterNodeConstants.BUILD_TOOL_NODEJS;
                 this.enableSwaggerCodegen = jhipsterNodeConstants.ENABLE_SWAGGER_CODEGEN_NODEJS;
-                this.authenticationType = jhipsterNodeConstants.AUTHENTICATION_TYPE_NODEJS;
-                this.testFrameworks =[];
+                this.testFrameworks = [];
 
                 /*
+                this.packagejs= jhipsterPackagejs;
+                this.jhipsterVersion=jhipsterPackagejs.version;
+
                 const configuration = this.getAllJhipsterConfig(this, true);
                 this.mongoProdDatabase = configuration.get('mongoProdDatabase');
                 */
             }
-
         };
-        /* eslint-enable */
+
         return Object.assign(initPhaseFromJHipster, jhipsterInitNodePhaseSteps);
 
         //  return initPhaseFromJHipster;
@@ -162,9 +91,12 @@ module.exports = class extends ServerGenerator {
         const jhipsterConfigNodeSteps = {
             jhipsterNodeSaveConfig() {
                 const config = {
+                    /* serverPort: this.serverPort,
                     databaseType: this.databaseType,
-                    devDatabaseType: this.devDatabaseType,
-                    prodDatabaseType: this.prodDatabaseType
+                    prodDatabaseType: this.prodDatabaseType,
+                    jhipsterVersion: this.jhipsterVersion,
+                    */
+                    devDatabaseType: this.devDatabaseType
                 };
                 this.config.set(config);
             }
@@ -195,21 +127,17 @@ module.exports = class extends ServerGenerator {
             jhipsterNodeEnd() {
                 this.log(chalk.green.bold('\nServer application generated successfully.\n'));
 
-                const executable = 'mvnw clean package -Pdev';
+                const executable = `${this.clientPackageManager} start:app`;
 
-                let logMsgComment = '';
-                const java = 'JAVA';
-                const serverREADME = 'server/README';
-                if (os.platform() === 'win32') {
-                    logMsgComment = ` (${chalk.yellow.bold(executable)} if using Windows Command Prompt)`;
-                }
+                const READMES = 'README.md and server/README.md';
+
                 this.log(
                     chalk.green(
-                        `Run your application:\n${chalk.yellow.bold(
-                            `./${executable}`
-                        )}${logMsgComment}.\n Otherwise, If you don't have ${chalk.yellow.bold(
-                            java
-                        )} installed, run the npm scripts explained under ${chalk.yellow.bold(serverREADME)}`
+                        `Run your application (after ${
+                            this.clientPackageManager
+                        } install in root folder and server folder) :\n ${chalk.yellow.bold(
+                            `${executable}`
+                        )}\nOtherwise, run the npm scripts explained under ${chalk.yellow.bold(READMES)}`
                     )
                 );
             }

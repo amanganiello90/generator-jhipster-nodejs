@@ -10,13 +10,25 @@ const fieldTypes = {
     Float: 'number',
     Double: 'number',
     BigDecimal: 'number',
-    String: '',
-    UUID: 'string',
-    LocalDate: 'string',
-    Instant: 'Moment',
-    ZonedDateTime: 'Moment',
-    'byte[]': 'any',
-    ByteBuffer: 'any'
+    String: 'string',
+    UUID: 'string'
+};
+
+const dbTypes = {
+    Boolean: 'boolean',
+    Integer: 'integer',
+    Long: 'long',
+    Float: 'float',
+    Double: 'double',
+    BigDecimal: 'decimal',
+    LocalDate: 'date',
+    Instant: 'timestamp',
+    ZonedDateTime: 'datetime',
+    AnyBlob: 'blob',
+    ImageBlob: 'blob',
+    Blob: 'blob',
+    TextBlob: 'blob',
+    'byte[]': 'blob'
 };
 
 module.exports = class extends EntityServerGenerator {
@@ -26,21 +38,14 @@ module.exports = class extends EntityServerGenerator {
         const jhContext = (this.jhipsterContext = this.options.jhipsterContext);
 
         if (!jhContext) {
-            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprint nodejs')}`);
+            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprints nodejs')}`);
         }
 
         this.configOptions = jhContext.configOptions || {};
-        if (jhContext.databaseType === 'cassandra') {
-            this.pkType = 'UUID';
-        }
     }
 
     get writing() {
-        return {
-            writeAdditionalFile() {
-                writeFiles.call(this);
-            }
-        };
+        return writeFiles();
     }
 
     get end() {
@@ -48,7 +53,11 @@ module.exports = class extends EntityServerGenerator {
         return super._end();
     }
 
-    getTsType(field) {
-        return field.fieldTypeBlobContent === 'text' ? 'string' : fieldTypes[field.fieldType] || 'any';
+    getTsType(fieldType) {
+        return fieldTypes[fieldType] || 'any';
+    }
+
+    addDbType(fieldType) {
+        return dbTypes[fieldType];
     }
 };

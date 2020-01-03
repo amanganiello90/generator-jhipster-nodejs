@@ -2,14 +2,14 @@ import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post as PostMet
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Response, Request } from 'express';
-import <%= entityClass %> from '../../domain/<%= entityModelFileName %>.entity';
+import <%= entityClass %> from '../../domain/<%= entityFileName %>.entity';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { <%= entityClass %>Repository } from '../../repository/<%= entityModelFileName %>.repository';
+import { <%= entityClass %>Repository } from '../../repository/<%= entityFileName %>.repository';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
-@Controller('<%= entityApiUrl %>')
+@Controller('api/<%= entityApiUrl %>')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
@@ -61,14 +61,15 @@ export class <%= entityClass %>Controller {
     return created;
   }
 
-  @Put('/:id')
+  @Put('/')
   @ApiOperation({ title: 'Update <%= asEntity(entityInstance) %>' })
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
     type: <%= entityClass %>,
   })
-  put(@Req() req: Request, @Param('id') id: string, @Body() <%= asEntity(entityInstance) %>: <%= entityClass %>) {
+  put(@Req() req: Request, @Body() <%= asEntity(entityInstance) %>: <%= entityClass %>) {
+    const id = <%= asEntity(entityInstance) %>.id;
     HeaderUtil.addEntityCreatedHeaders(req.res, '<%= entityClass %>', id);
     return this.<%= asEntity(entityInstance) %>Repository.update(id, <%= asEntity(entityInstance) %>);
   }

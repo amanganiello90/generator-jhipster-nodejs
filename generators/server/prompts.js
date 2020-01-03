@@ -30,37 +30,28 @@ function askForMainServerSideOpts(meta) {
         },
         {
             type: 'list',
+            name: 'authenticationType',
+            message: `Which ${chalk.yellow('*type*')} of authentication would you like to use?`,
+            choices: [
+                { value: 'jwt', name: 'JWT authentication (stateless, with a token)' },
+                { value: 'oauth2', name: 'OAuth 2.0 / OIDC Authentication (stateful, works with Okta)' }
+            ],
+            default: 'jwt'
+        },
+        {
+            type: 'list',
             name: 'prodDatabaseType',
             message: `Which ${chalk.yellow('*production*')} database would you like to use?`,
-            choices: response => {
-                const opts = [];
-                opts.push({
-                    value: 'sqlite',
-                    name: 'SQLite'
-                });
-                opts.push({
-                    value: 'mongodb',
-                    name: 'MongoDB'
-                });
-                opts.push({
-                    value: 'mysql',
-                    name: 'MySQL or MariaDB'
-                });
-                opts.push({
-                    value: 'postgresql',
-                    name: 'PostgreSQL or CockroachDB'
-                });
-                opts.push({
-                    value: 'oracle',
-                    name: 'Oracle (Please follow our documentation to use the Oracle proprietary driver)'
-                });
-                opts.push({
-                    value: 'mssql',
-                    name: 'Microsoft SQL Server'
-                });
-                return opts;
-            },
-            default: 0
+            choices: [
+                { value: 'sqlite', name: 'SQLite' },
+                /* {   value: 'mongodb',
+                name: 'MongoDB' }, */
+                { value: 'mysql', name: 'MySQL or MariaDB' },
+                { value: 'postgres', name: 'PostgreSQL or CockroachDB' },
+                { value: 'oracle', name: 'Oracle (Please follow our documentation to use the Oracle proprietary driver)' },
+                { value: 'mssql', name: 'Microsoft SQL Server' }
+            ],
+            default: 'sqlite'
         }
     ];
 
@@ -69,15 +60,21 @@ function askForMainServerSideOpts(meta) {
     const done = this.async();
 
     this.prompt(PROMPT).then(prompt => {
-        this.serverPort = prompt.serverPort;
+        this.databaseType = 'sql';
         this.devDatabaseType = 'sqlite';
         this.prodDatabaseType = prompt.prodDatabaseType;
+        this.serverPort = prompt.serverPort;
+        this.authenticationType = prompt.authenticationType;
 
+        if (this.serverPort === undefined) {
+            this.serverPort = defaultPort;
+        }
+
+        /*
         if (this.prodDatabaseType === 'mongodb') {
             this.databaseType = 'mongodb';
-        } else {
-            this.databaseType = 'sql';
         }
+        */
 
         done();
     });

@@ -46,7 +46,8 @@ This application is configured for Service Discovery and Configuration with <% i
 <%_ if (skipClient) { _%>
 To start your application in the dev profile, simply run:
 
-    <% if (buildTool === 'maven') { %>./mvnw<% } %><% if (buildTool === 'gradle'){ %>./gradlew<% } %>
+    cd server && <%= clientPackageManager %> install
+    <%= clientPackageManager %> start:app
 
 <%_ } _%>
 <%_ if (!skipClient) { _%>
@@ -82,39 +83,15 @@ The `<%= clientPackageManager %> run` command will list all of the scripts avail
 
 ## OAuth 2.0 / OpenID Connect
 
-Congratulations! You've selected an excellent way to secure your JHipster application. If you're not sure what OAuth and OpenID Connect (OIDC) are, please see [What the Heck is OAuth?](https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth)
-
-To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. The JHipster Team has created a Docker container for you that has the default users and roles. Start Keycloak using the following command.
-
-```
-docker-compose -f src/main/docker/keycloak.yml up
-```
-
-The security settings in `src/main/resources/application.yml` are configured for this image.
-
-```yaml
-spring:
-  ...
-  security:
-    oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: http://localhost:9080/auth/realms/jhipster
-        registration:
-          oidc:
-            client-id: web_app
-            client-secret: web_app
-```
+Congratulations! You've selected an excellent way to secure your NHipster application. If you're not sure what OAuth and OpenID Connect (OIDC) are, please see [What the Heck is OAuth?](https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth)
 
 ### Okta
 
-If you'd like to use Okta instead of Keycloak, you'll need to change a few things. First, you'll need to create a free developer account at <https://developer.okta.com/signup/>. After doing so, you'll get your own Okta domain, that has a name like `https://dev-123456.okta.com`.
+To log in to your app, you'll need to change a few things. First, you'll need to create a free developer account at <https://developer.okta.com/signup/>. After doing so, you'll get your own Okta domain, that has a name like `https://dev-123456.okta.com`.
 
-Modify `src/main/resources/application.yml` to use your Okta settings.
+Modify `<%= SERVER_NODEJS_SRC_DIR %>/src/config/application.yml` to use your Okta settings.
 
 ```yaml
-spring:
   ...
   security:
     oauth2:
@@ -126,16 +103,39 @@ spring:
           oidc:
             client-id: {clientId}
             client-secret: {clientSecret}
-security:
 ```
 
-Create an OIDC App in Okta to get a `{clientId}` and `{clientSecret}`. To do this, log in to your Okta Developer account and navigate to **Applications** > **Add Application**. Click **Web** and click the **Next** button. Give the app a name you’ll remember, specify `http://localhost:8080` as a Base URI, and `http://localhost:8080/login/oauth2/code/oidc` as a Login Redirect URI. Click **Done**, then Edit and add `http://localhost:8080` as a Logout redirect URI. Copy and paste the client ID and secret into your `application.yml` file.
+Create an OIDC App in Okta to get a `{clientId}` and `{clientSecret}`. To do this, log in to your Okta Developer account and navigate to **Applications** > **Add Application**. Click **Web** and click the **Next** button. Give the app a name you’ll remember, specify `http://localhost:8081` as a Base URI, and `http://localhost:8081/login/oauth2/code/oidc` as a Login Redirect URI. Click **Done**, then Edit and add `http://localhost:8081` as a Logout redirect URI. Copy and paste the client ID and secret into your `application.yml` file.
 
-Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them. Modify e2e tests to use this account when running integration tests. You'll need to change credentials in `src/test/javascript/e2e/account/account.spec.ts` and `src/test/javascript/e2e/admin/administration.spec.ts`.
+Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them.
 
 Navigate to **API** > **Authorization Servers**, click the **Authorization Servers** tab and edit the default one. Click the **Claims** tab and **Add Claim**. Name it "groups", and include it in the ID Token. Set the value type to "Groups" and set the filter to be a Regex of `.*`.
 
 After making these changes, you should be good to go! If you have any issues, please post them to [Stack Overflow](https://stackoverflow.com/questions/tagged/jhipster). Make sure to tag your question with "jhipster" and "okta".
+
+<%_ } else if (authenticationType === 'jwt') { _%>
+
+## JWT authentication and authorization
+
+Congratulations! You've selected an excellent way to secure your NHipster application. If you're not sure what JSON Web Token (JWT) is, please see [What the Heck is JWT?](https://jwt.io/introduction/)
+
+Your app uses, to get and use the token, the `<%= SERVER_NODEJS_SRC_DIR %>/src/config/application.yml` settings:
+
+```yaml
+  ...
+  security:
+    authentication:
+        jwt:
+            # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+            base64-secret: {yourSecret}
+            # Token is valid 24 hours
+            token-validity-in-seconds: 86400
+            token-validity-in-seconds-for-remember-me: 2592000
+```
+
+You can use the default secret created from the app, or change it. 
+So to get a token, you have to pass a POST request on the _api/authenticate_ url with **UserLoginDTO** as body.
+For this you can use **swagger ui** on **/api/v2/api-docs** path, or the client login page (if you have generated it).
 <%_ } _%>
 
 ### PWA Support
@@ -211,71 +211,23 @@ will generate the file:
     create <%= SERVER_NODEJS_SRC_DIR %>/src/my-component/my-component.module.ts
 
 
-<%_ if (enableSwaggerCodegen) { _%>
-### Doing API-First development using openapi-generator
-
-[OpenAPI-Generator]() is configured for this application. You can generate API code from the `src/main/resources/swagger/api.yml` definition file by running:
-    <%_ if (buildTool === 'maven') { _%>
-```bash
-./mvnw generate-sources
-```
-    <%_ } _%>
-    <%_ if (buildTool === 'gradle') { _%>
-```bash
-./gradlew openApiGenerate
-```
-    <%_ } _%>
-Then implements the generated delegate classes with `@Service` classes.
-
-To edit the `api.yml` definition file, you can use a tool such as [Swagger-Editor](). Start a local instance of the swagger-editor using docker by running: `docker-compose -f src/main/docker/swagger-editor.yml up -d`. The editor will then be reachable at [http://localhost:7742](http://localhost:7742).
-
-Refer to [Doing API-First development][] for more details.
-<%_ } _%>
-
 ## Building and running
 
-You can run the application using mvnw command (if you have JAVA) or the npm standard scripts
-
-### With JAVA installed
-
 #### Running
 
 ```bash
-./mvnw clean package -Pdev
-```
-#### Building
-
-```bash
-./mvnw clean package -Pprod
-```
-
-### With node npm scripts
-
-<%_ if (!skipClient) { _%>
-
-As prerequisite, before you have to build the client code:
-    
-```bash
-<%= clientPackageManager %> build
-```
-<%_ } _%>
-
-#### Running
-
-
-```bash
-cd server && <%= clientPackageManager %> start
+<%= clientPackageManager %> start:app
 ```
 
 #### Building
 
 ```bash
-cd server && <%= clientPackageManager %> build
+<%= clientPackageManager %> build:app
 ```
 
 The build folder with all compiled sources will be **server/dist**.
 
-> For more explanation about full stack server/client build refer to **server/README.md**
+> For more explanation about full stack server/client build refer to [server/README.md](server/README.md)
 
 <% if (!skipClient) { %>
 ### Client tests
@@ -285,7 +237,7 @@ Unit tests are run by [Jest][] and written with [Jasmine][]. They're located in 
     <%= clientPackageManager %> test
 
 <% if (protractorTests) { %>UI end-to-end tests are powered by [Protractor][], which is built on top of WebDriverJS. They're located in [<%= CLIENT_TEST_SRC_DIR %>e2e](<%= CLIENT_TEST_SRC_DIR %>e2e)
-and can be run by starting Spring Boot in one terminal (`<% if (buildTool === 'maven') { %>./mvnw spring-boot:run<% } else { %>./gradlew bootRun<% } %>`) and running the tests (`<%= clientPackageManager %> run e2e`) in a second one.<% } %>
+and can be run in terminal (`<%= clientPackageManager %> run e2e`)
 <% } %><% if (gatlingTests) { %>### Other tests
 
 Performance tests are run by [Gatling][] and written in Scala. They're located in [src/test/gatling](src/test/gatling).
@@ -293,6 +245,7 @@ Performance tests are run by [Gatling][] and written in Scala. They're located i
 To use those tests, you must install Gatling from [https://gatling.io/](https://gatling.io/).
 <% } %>
 For more information, refer to the [Running tests page][].
+<% } %>
 
 [JHipster Homepage and latest documentation]: <%= DOCUMENTATION_URL %>
 [JHipster <%= jhipsterVersion %> archive]: <%= DOCUMENTATION_ARCHIVE_URL %>
@@ -325,9 +278,4 @@ For more information, refer to the [Running tests page][].
 [Protractor]: https://angular.github.io/protractor/
 [Leaflet]: http://leafletjs.com/
 [DefinitelyTyped]: http://definitelytyped.org/
-<%_ } _%>
-<%_ if (enableSwaggerCodegen) { _%>
-[OpenAPI-Generator]: https://openapi-generator.tech
-[Swagger-Editor]: http://editor.swagger.io
-[Doing API-First development]: <%= DOCUMENTATION_ARCHIVE_URL %>/doing-api-first-development/
 <%_ } _%>

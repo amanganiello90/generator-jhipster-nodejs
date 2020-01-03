@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
 const chalk = require('chalk');
 const ClientGenerator = require('generator-jhipster/generators/client');
+// const jhipsterPackagejs = require('generator-jhipster/package.json');
 const constants = require('../generator-nodejs-constants');
 const writeFiles = require('./files').writeFiles;
 
@@ -11,7 +12,7 @@ module.exports = class extends ClientGenerator {
         const jhContext = (this.jhipsterContext = this.options.jhipsterContext);
 
         if (!jhContext) {
-            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprint nodejs')}`);
+            this.error(`This is a JHipster blueprint and should be used only like ${chalk.yellow('jhipster --blueprints nodejs')}`);
         }
 
         this.configOptions = jhContext.configOptions || {};
@@ -25,25 +26,13 @@ module.exports = class extends ClientGenerator {
             // variables to use in templates
             setupCustomClientConsts() {
                 this.SERVER_NODEJS_SRC_DIR = constants.SERVER_NODEJS_SRC_DIR;
+                // this.packagejs = jhipsterPackagejs;
             }
         };
         return Object.assign(initPhaseFromJHipster, initNodeClientPhaseSteps);
-
-        // Here we are not overriding this phase and hence its being handled by JHipster
-        // return super._initializing();
     }
 
     get prompting() {
-        // The prompting phase is being overriden so that we can ask our own questions
-        /*
-        return {
-            askForClientSideOpts: prompts.askForClientSideOpts,
-            setSharedConfigOptions() {
-                // this.configOptions.clientFramework = this.clientFramework;
-            }
-        };
-        */
-        // If the prompts need to be overriden then use the code commented out above instead
         return super._prompting();
     }
 
@@ -53,12 +42,15 @@ module.exports = class extends ClientGenerator {
     }
 
     get default() {
-        // Here we are not overriding this phase and hence its being handled by JHipster
-        return super._default();
+        const defaultPhaseFromJHipster = super._default();
+        const defaultNodeClientPhaseSteps = {
+            // disable languages
+            composeLanguages() {}
+        };
+        return Object.assign(defaultPhaseFromJHipster, defaultNodeClientPhaseSteps);
     }
 
     get writing() {
-        // const phaseFromJHipster = super._writing();
         const phaseFromJHipster = super._writing();
         const jhipsterNodeClientPhaseSteps = writeFiles();
         return Object.assign(phaseFromJHipster, jhipsterNodeClientPhaseSteps);

@@ -4,7 +4,7 @@ const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 
 describe('Subgenerator common of nodejs JHipster blueprint', () => {
-    describe('Sample test', () => {
+    describe('1-test', () => {
         before(done => {
             helpers
                 .run('generator-jhipster/generators/common')
@@ -14,7 +14,7 @@ describe('Subgenerator common of nodejs JHipster blueprint', () => {
                 .withOptions({
                     'from-cli': true,
                     skipInstall: true,
-                    blueprint: 'nodejs',
+                    blueprints: 'nodejs',
                     skipChecks: true
                 })
                 .withGenerators([
@@ -30,9 +30,9 @@ describe('Subgenerator common of nodejs JHipster blueprint', () => {
                 .on('end', done);
         });
 
-        it('it works', () => {
+        it('app exists with custom generator-jhipster-nodejs string in the README.md', () => {
             // Adds your tests here
-            assert.textEqual('Write your own tests!', 'Write your own tests!');
+            assert.fileContent('README.md', 'https://github.com/jhipster/generator-jhipster-nodejs');
         });
     });
 });

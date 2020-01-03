@@ -4,7 +4,7 @@ const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
 
 describe('Subgenerator nestjs-service of nodejs JHipster blueprint', () => {
-    describe('Sample test', () => {
+    describe('1-test', () => {
         before(done => {
             helpers
                 .run('generator-jhipster/generators/spring-service')
@@ -14,7 +14,7 @@ describe('Subgenerator nestjs-service of nodejs JHipster blueprint', () => {
                 .withOptions({
                     'from-cli': true,
                     skipInstall: true,
-                    blueprint: 'nodejs',
+                    blueprints: 'nodejs',
                     skipChecks: true
                 })
                 .withGenerators([

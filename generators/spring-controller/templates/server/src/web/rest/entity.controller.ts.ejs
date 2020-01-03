@@ -7,7 +7,7 @@ import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
-@Controller('<%= controllerFileName %>s')
+@Controller('api/<%= controllerFileName %>s')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
@@ -47,13 +47,13 @@ export class <%= controllerClass %>Controller {
     return;
   }
 
-  @Put('/:id')
+  @Put('/')
   @ApiOperation({ title: 'Update ' })
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.'
   })
-  put(@Req() req: Request, @Param('id') id: string, @Body() any: any) {
+  put(@Req() req: Request, @Body() any: any) {
     return;
   }
 

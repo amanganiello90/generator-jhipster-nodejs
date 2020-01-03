@@ -7,9 +7,8 @@ To contribute for the next featues, fork the repo and open a pull request regard
 
 * Blueprint to generate monolitich/microservice app with NestJS basic templates
 * Swagger support
-* Entity ORM generation for prod database (mongodb) and dev database (default db is sqlite already configured)
-* Basic security management with jwt
-* Maven simple orchestration to run server with client part in case of monolithic app with frontend code
+* Entity ORM generation for prod database (sql) and dev database (default db is sqlite already configured)
+* Basic security management with jwt and oauth2
 * All subgenerators (without services)
 
 > Let it free to give advices or tips!
@@ -21,7 +20,7 @@ To contribute for the next featues, fork the repo and open a pull request regard
 - [x] Import jdl: functional entity-server generator with simple options (no dto, no serviceImpl)
 - [x] Typeorm mappings for both sql and mongodb 
 - [x] Rest API (with headers) compatible with other jhipster implementations
-- [x] Spring Cloud Configuration client
+- [x] Cloud Configuration client
 - [x] Eureka client (but there are some issues registering zuul routes in jhipster registry app)
 - [x] JWT authentication and role base method decorators
 - [x] Swagger documentation
@@ -30,20 +29,30 @@ To contribute for the next featues, fork the repo and open a pull request regard
 - [x] Added controller generator (jhipster spring-controller _name_ command)
 - [x] Delete unuseful java questions not supported 
 - [x] Entity generator
-- [x] Automatic config in dev profile sqlite db and in prod mongodb or another db
+- [x] Automatic config in dev profile sqlite db and in prod another sql db
 - [x] All user and auth api with jwt integrated in angular ui
 - [x] Replaced mongoProdDatabase question with standard jhipster databaseType and with all db typeORM support
-
+- [x] Remove maven with JAVA requirement option
+- [x] Add package.json when no client
+- [x] Avoid reinsert seed db in restart app using typeORM migration
+- [x] Test prod mysql database and update doc with angular/react client
+- [x] OAuth2 feature for Okta
+- [x] Integration test in the pipeline build
+- [x] Remove all java references customizing main app generator
+- [x] Needs way more testing of different relations, combinations for entity
+- [x] Pipelines migrations from travis to GitHub Actions
+- [x] Unit tests for all generators and sonar quality with coverage
 
 ## To DO for next release
 
+- [ ] Encrypt user password in db
+- [ ] OAuth2 feature for Keycloack
 - [ ] Languages subgenerator support i18n: translate home page for NHipster and remove spring boot resources message 
-- [ ] Unit tests: both for the blueprint and for generated project
+- [ ] Unit tests for generated project
 - [ ] DTOs based rest api
 - [ ] Validation
 - [ ] Export json/yaml for swagger to integrate with jhipster gateway
-- [ ] Needs way more testing of different relations, combinations for entity
-- [ ] Different pagination options
+- [ ] pagination options in client
 - [ ] Elastic Search support
 - [ ] Search api
-- [ ] Other core/admin jhipster management api and services
+- [ ] Other core/admin jhipster management api and services with sending email
